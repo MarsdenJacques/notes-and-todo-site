@@ -1,0 +1,33 @@
+.title{
+    width: 100%;
+    background-color: ivory;
+    display: flex;
+    justify-content: center;
+}
+.content{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    flex-basis: 30%;
+    height: auto;
+    background-color: ivory;
+    border: 2px solid gray;
+    align-items: center;
+}
+.text{
+    width: 100%;
+    background-color: ivory;
+    border: none;
+    display: flex;
+    justify-content: center;
+    padding: 10px 10px 10px 10px;
+}
+.text:focus{
+    outline: none;
+}
+.delete
+{
+    width: 90%;
+    margin-top: auto;
+    margin-bottom: 10px;
+}
