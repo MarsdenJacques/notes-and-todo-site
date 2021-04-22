@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react'
 import style from './note.module.css'
+import colorPicker from './color-picker.js'
 
 export default function Note(props){
     const [edited, setEdited] = useState([])
@@ -7,9 +8,11 @@ export default function Note(props){
     const [title, setTitle] = useState('')
     const [text, setText] = useState('')
     const [editing, setEditing] = useState('no')
+    const [color, setColor] = useState('')
 
     useEffect(() => {
         setId(props.itemId)
+        setColor(colorPicker())
         fetch('/api/notes/' + props.itemId, {
             method: 'GET'
           })
@@ -78,7 +81,8 @@ export default function Note(props){
     }
 
     return(
-        <section className = {style.content}>
+        <section className = {style.content + ' ' + color}>
+            <button onClick = {() => Delete()} className = {style.delete}>X</button>
             <h1 className = {style.title}>
                 <div onClick = {() => setEditing('title')}>{editing === 'title' ? 
                 <form onSubmit = {EditTitle}>
@@ -97,7 +101,6 @@ export default function Note(props){
                     <p>{text}</p>
                 }</div>
             </div>
-            <button onClick = {() => Delete()} className = {style.delete}>Delete</button>
         </section>
     )
 }

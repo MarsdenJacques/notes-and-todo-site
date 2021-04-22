@@ -1,5 +1,6 @@
-import {useState, useEffect} from 'react'
+import {useState, useEffect, useRef} from 'react'
 import style from './todo.module.css'
+import colorPicker from './color-picker.js'
 
 export default function Todo(props){
     const [edited, setEdited] = useState([])
@@ -7,9 +8,13 @@ export default function Todo(props){
     const [title, setTitle] = useState('loading title')
     const [items, setItems] = useState([])
     const [editing, setEditing] = useState('no')
+    const [color, setColor] = useState('')
+
+    const itemForm = useRef(null)
 
     useEffect(() => {
         setId(props.itemId)
+        setColor(colorPicker())
         fetch('/api/todo/' + props.itemId, {
             method: 'GET'
           })
@@ -141,7 +146,8 @@ export default function Todo(props){
     }
 
     return(
-        <section className = {style.content}>
+        <section className = {style.content + ' ' + color}>
+            <button onClick = {() => DeleteTodo()} className = {style.delete}>X</button>
             <h1 className = {style.title}>
                 <div onClick = {() => setEditing('title')}>{editing === 'title' ? 
                 <form onSubmit = {EditTitle}>
@@ -153,21 +159,20 @@ export default function Todo(props){
             <div className = {style.list}>
                 {
                     items.map(({item, state, id}, index) => {
-                        return (<div key = {index} className = {style.item} onClick = {() => setEditing(index)}>
-                            <button onClick = {() => DeleteItem(index, id)} className = {style.deleteitem}>X</button>
-                            {editing === index ?  <form onSubmit = {EditItem}>
-                                <input type = 'text' defaultValue = {item} id = {id} autoFocus></input>
+                        return (<div key = {index} className = {style.item}>
+                            <button onClick = {() => ToggleCheck(index, id)} className = {style.checkbox}>{state === 1 ? '\u2713' : ''}</button>
+                            {editing === index ?  <form onSubmit = {EditItem} className = {style.form} ref = {itemForm}>
+                                <input type = 'text' defaultValue = {item} id = {id} className = {style.itemInput} autoFocus></input>
                                 <button input-type = 'submit'>Save</button>
-                            </form> : <p>{item}</p>
+                            </form> : <div onClick = {() => setEditing(index)} className = {style.itemTextContainer}><p>{item}</p></div>
                             }
-                            <button onClick = {() => ToggleCheck(index, id)} className = {style.checkbox}>{state === 1 ? 'Done' : 'Todo'}</button>
+                            <div className = {style.deleteContainer}>{editing === index && <button onClick = {() => DeleteItem(index, id)} className = {style.deleteitem}>X</button>}</div>
                         </div>)
                     })
                 }
 
             </div>
-            <button onClick = {() => AddTodoItem()} className = {style.newitem}>New Todo Item</button>
-            <button onClick = {() => DeleteTodo()} className = {style.delete}>Delete</button>
+            <button onClick = {() => AddTodoItem()} className = {style.newitem}>+</button>
         </section>
     )
 }

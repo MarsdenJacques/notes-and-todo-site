@@ -1,24 +1,27 @@
-import {connection} from "../../../lib/db.js"
+import { withApiAuthRequired, getSession } from '@auth0/nextjs-auth0';
 
-export default async (req, res) => {
+import {connection} from "../../lib/db.js"
+
+export default withApiAuthRequired(async (req, res) => {
+  const { user } = getSession(req, res);
+  if(user)
+  {
     var conn = await connection;
     if(req.method === 'GET')
     {
       const { id } = req.query
-      console.log('id: ' + id)
-      const queryText = 'SELECT notes.title AS title, notes.content AS content FROM notes WHERE notes.id = ' + id
-      console.log(queryText)
-      const [data] = await conn.query(
-        queryText
-      );
-      console.log(data)
-      return res.status(200).json(data)
+      return Get(conn, id, req, res)
     }
-    else if(req.method === 'POST')
-    {
-      return res.status(200)
-    }
-    else{
-      return res.status(404).json({id: "lol", title: "lol"})
-    }
+    return res.status(404)
   }
+  return res.status(401)
+});
+
+async function Get(conn, id, req, res)
+{
+  const [data] = await conn.query(
+    'SELECT notes.title AS title, notes.content AS content FROM notes WHERE notes.id = ?',
+    [id]
+  );
+  return res.status(200).json(data)
+}
