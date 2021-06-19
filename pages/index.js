@@ -1,4 +1,3 @@
-import Link from 'next/Link'
 import {useState, useEffect} from 'react'
 import { useUser } from '@auth0/nextjs-auth0';
 import Note from '../components/note.js'
